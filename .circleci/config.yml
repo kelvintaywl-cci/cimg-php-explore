@@ -1,0 +1,28 @@
+version: 2.1
+
+
+defaults: &default_image
+  docker:
+    - image: cimg/php:7.4-browsers
+  resource_class: medium+
+  working_directory: ~/deployment_source
+
+jobs:
+  build:
+    <<: *default_image
+    steps:
+      - checkout
+      - run: sudo apt-get update
+      - run: sudo apt-get install php7.4-ldap
+      - run: sudo apt install -y libsqlite3-dev zlib1g-dev
+      - run: sudo apt-get install -y libpng-dev
+      - run: sudo apt-get install -y libldb-dev libldap2-dev
+      - run: sudo apt-get install -y libfreetype6-dev libpng-dev
+      - run: sudo apt-get install -y python3-pip
+      - run: sudo apt-get autoclean
+      - run: sudo apt-get clean
+      - run: sudo composer self-update
+      - run: php --ini
+      - run: composer update
+      - run: composer install -n -v --prefer-dist
+      - run: php artisan key:generate
